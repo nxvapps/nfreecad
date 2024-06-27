@@ -1,15 +1,15 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: ncast
+  name: nfreecad
   labels:
-    name: ncast
+    name: nfreecad
 ---
 apiVersion: v1
 kind: Secret
 metadata:
-  name: ncast-secret
-  namespace: ncast
+  name: nfreecad-secret
+  namespace: nfreecad
 type: Opaque
 data:
   APP_PASSWORD: VEVTVFBBU1NXT1JE # base64 encoded value of 'TESTPASSWORD'
@@ -17,27 +17,27 @@ data:
 apiVersion: v1
 kind: Secret
 metadata:
-  name: ncast-basic-auth
-  namespace: ncast
+  name: nfreecad-basic-auth
+  namespace: nfreecad
 data:
-  auth: bmNhc3Q6JGFwcjEkVlhGVXJKRkkkNkREV0I0N3lkZm11OFljUzhWSVM1MAoK # User: 'ncast' Password: 'TESTPASSWORD'
+  auth: bmNhc3Q6JGFwcjEkVlhGVXJKRkkkNkREV0I0N3lkZm11OFljUzhWSVM1MAoK # User: 'nfreecad' Password: 'TESTPASSWORD'
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: ncast
-  namespace: ncast
+  name: nfreecad
+  namespace: nfreecad
 spec:
   selector:
     matchLabels:
-      app: ncast
+      app: nfreecad
   strategy:
     type: Recreate
   template:
     metadata:
       labels:
-        app: ncast
-      namespace: ncast
+        app: nfreecad
+      namespace: nfreecad
     spec:
       securityContext:
         runAsUser: 0
@@ -47,13 +47,13 @@ spec:
         emptyDir:
           medium: Memory
       containers:
-      - name: ncast
-        image: ghcr.io/nxvapps/ncast:cuda12.4.0-ubuntu22.04
+      - name: nfreecad
+        image: ghcr.io/nxvapps/nfreecad:cuda12.4.0-ubuntu22.04
         env:
         - name: APP_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: ncast-secret
+              name: nfreecad-secret
               key: APP_PASSWORD
         ports:
         - containerPort: 7777
@@ -75,46 +75,46 @@ kind: Service
 apiVersion: v1
 metadata:
   labels:
-    app: ncast
-  name: ncast
-  namespace: ncast
+    app: nfreecad
+  name: nfreecad
+  namespace: nfreecad
 spec:
   ports:
     - port: 7777
       name: http
       targetPort: 7777
   selector:
-    app: ncast
+    app: nfreecad
 ---
 apiVersion: traefik.containo.us/v1alpha1
 kind: Middleware
 metadata:
-  name: ncast-auth-middleware
-  namespace: ncast
+  name: nfreecad-auth-middleware
+  namespace: nfreecad
 spec:
   basicAuth:
     removeHeader: true
-    secret: ncast-basic-auth
+    secret: nfreecad-basic-auth
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: ncast
-  namespace: ncast
+  name: nfreecad
+  namespace: nfreecad
   annotations:
     traefik.ingress.kubernetes.io/router.entrypoints: web
     traefik.ingress.kubernetes.io/service.scheme: "http"
-    traefik.ingress.kubernetes.io/router.middlewares: ncast-ncast-auth-middleware@kubernetescrd
+    traefik.ingress.kubernetes.io/router.middlewares: nfreecad-nfreecad-auth-middleware@kubernetescrd
 spec:
   ingressClassName: "traefik"
   rules:
-  - host: ncast.somedomain.com
+  - host: nfreecad.somedomain.com
     http:
         paths:
         - pathType: Prefix
           path: "/"
           backend:
             service:
-              name: ncast
+              name: nfreecad
               port:
                 number: 7777

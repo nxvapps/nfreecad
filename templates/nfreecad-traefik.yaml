@@ -20,7 +20,7 @@ metadata:
   name: nfreecad-basic-auth
   namespace: nfreecad
 data:
-  auth: bmNhc3Q6JGFwcjEkVlhGVXJKRkkkNkREV0I0N3lkZm11OFljUzhWSVM1MAoK # User: 'nfreecad' Password: 'TESTPASSWORD'
+  auth: bmZyZWVjYWQ6JGFwcjEkOEJ1SHlSSEIkRXVoelkvRFh6LnZqcGhackxYdUpkMAoK # User: 'nfreecad' Password: 'TESTPASSWORD'
 ---
 apiVersion: apps/v1
 kind: Deployment
